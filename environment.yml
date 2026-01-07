@@ -1,0 +1,17 @@
+name: cvml
+channels:
+    - conda-forge
+    - anaconda
+dependencies:
+    - python=3.10.0
+    - numpy=1.23.5
+    - pip=22.3.1
+    - pip:
+      - https://download.pytorch.org/whl/cu118/torch-2.1.1%2Bcu118-cp310-cp310-linux_x86_64.whl
+      - ipywidgets==8.1.1
+      - matplotlib==3.8.2
+      - jupyterlab==4.3.6
+      - notebook==7.0.6
+      - plotly==5.18.0
+      - scikit-learn
+      - tqdm

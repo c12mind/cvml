@@ -1,0 +1,31 @@
+{
+    "data_files": [
+        {
+            "name": "BCMS1Eth.csv", 
+            "voltage": 1.5, 
+            "temp": 800, 
+            "time_h": 3,
+            "mass_mg": 0.7
+        },
+        {
+            "name": "BCMS6Eth.csv", 
+            "voltage": 2.5, 
+            "temp": 700, 
+            "time_h": 2,
+            "mass_mg": 0.28
+        }
+    ],
+    "rows": 264,
+    "batch_sz": 4096,
+    "scanrate_V": 0.1,
+    "lambda_smooth": 0.005,
+    "lambda_dir": 0.1,
+    "learning_rate": 2e-5,
+    "epochs": 1000,
+    "save_freq": 100,
+    "hidden_sz": 1024,
+    "dropout": 0.1,
+    "leave_out": ["BCMS6Eth"],
+    "use_wandb": false,
+    "chunksize": 1
+}
