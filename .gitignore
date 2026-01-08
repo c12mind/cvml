@@ -3,3 +3,4 @@ saved_models
 *.csv
 *.xlsx
 wandb
+env_setup_done

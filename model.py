@@ -14,20 +14,22 @@ class CV_PINN(nn.Module):
         self.mlp = nn.Sequential(
             nn.Linear(self.inp_sz, self.hidden_sz),
             nn.ReLU(),
-            nn.Linear(self.hidden_sz, self.hidden_sz),
+            nn.Linear(self.hidden_sz, self.hidden_sz * 2),
             nn.ReLU(),
-            nn.Linear(self.hidden_sz, self.hidden_sz),
+            nn.Linear(self.hidden_sz * 2, self.hidden_sz * 4),
             nn.ReLU(),
-            # nn.Dropout(self.drop),
+            nn.Linear(self.hidden_sz * 4, self.hidden_sz * 2),
+            nn.ReLU(),
+            nn.Linear(self.hidden_sz * 2, self.hidden_sz),
+            nn.ReLU(),
             nn.Linear(self.hidden_sz, self.out_sz),
         )
 
     
     def forward(self, E, scan_dir, cond_features):
         E.requires_grad_(True)
-
-        faradaic_features = torch.cat([E, scan_dir, cond_features], dim=1)
-        I_pred = self.mlp(faradaic_features)
+        condition_features = torch.cat([E, scan_dir, cond_features], dim=1)
+        I_pred = self.mlp(condition_features)
         dI_dE = torch.autograd.grad(
             outputs=I_pred,
             inputs=E,

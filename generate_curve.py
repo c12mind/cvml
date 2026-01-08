@@ -22,24 +22,6 @@ def hysteresis_area(E, I, d):
     area = A_fwd - A_rev
     return area
 
-def _hysteresis_area(E, I, d):
-    # only consider values > 0? why?
-    idx_gt_zero = I >= 0
-    E = E[idx_gt_zero]
-    I = I[idx_gt_zero]
-    d = d[idx_gt_zero]
-
-    E_fwd, I_fwd = E[d > 0], I[d > 0]
-    E_rev, I_rev = E[d < 0], I[d < 0]
-    idx_fwd = np.argsort(E_fwd)
-    idx_rev = np.argsort(E_rev)
-    A_fwd = np.trapz(I_fwd[idx_fwd], E_fwd[idx_fwd])
-    A_rev = np.trapz(I_rev[idx_rev], E_rev[idx_rev])
-    half_area = A_fwd - A_rev
-    area = 2 * half_area
-    print(A_fwd, A_rev, half_area, area)
-    return area
-
 def get_sorted_checkpoints(model_path):
     checkpoints = sorted(
         model_path.glob("*.pth"),
@@ -62,7 +44,7 @@ def load_pretrained_model(config, checkpoint):
     
     return model
 
-def make_curve(model, val_dl, ds_stats, run_name):
+def make_curve(model, val_dl, ds_stats, run_name, epoch):
     I_pred_all = []
     I_real_all = []
     E_real_all = []
@@ -114,7 +96,7 @@ def make_curve(model, val_dl, ds_stats, run_name):
     plt.plot(xs, pred_curve, label="pred I")
     plt.legend()
     plt.title(f"{run_name}\n{grav_txt}")
-    plt.show()
+    plt.savefig(f"saved_models/{run_name}/epoch_{epoch}_curve.png")
     
 
  
@@ -129,7 +111,8 @@ if __name__ == "__main__":
     all_checkpoints, config = get_sorted_checkpoints(run_path)
     latest_checkpoint = all_checkpoints[0]
     print(f"Loading from checkpoint: {latest_checkpoint}")
+    best_epoch = int(latest_checkpoint.stem.split("_")[2])
     _, val_dl, ds_handler = load_data(config)
     model = load_pretrained_model(config, latest_checkpoint)
     model = model.cuda()
-    make_curve(model, val_dl, ds_handler.get_ds_stats(), run_name)
+    make_curve(model, val_dl, ds_handler.get_ds_stats(), run_name, best_epoch)
