@@ -1,6 +1,7 @@
 # ML-based Cyclic Voltammetry Curve Prediction
-
 This repository implements a neural network model for predicting cyclic voltammetry (CV) current–voltage hysteresis loops from experimental conditions. Given electrode/material parameters and a voltage sweep, the model outputs the current for both forward and reverse scans.
+
+<img src="img/banner.png" width="400" />
 
 ## Overview
 
