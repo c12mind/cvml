@@ -40,7 +40,7 @@ To encourage smoothness in the generated output, higher-order derivatives of cur
 
 Concretely, this is given by:
 ```math
-\mathcal{L} = ||I_{pred} - I_{exp}||_{2}^{2} + \lambda \left|\left|\frac{\partial^2 I_{pred}}{\partial E^2}\right|\right|_{2}^{2}
+\mathcal{L} = \lVert I_{pred} - I_{exp}\rVert_{2}^{2} + \lambda \Bigl\lVert\frac{\partial^2 I_{pred}}{\partial E^2}\Bigr\rVert_{2}^{2}
 ```
 where $I_{pred}$ is the model's prediction, $I_{exp}$ is the true value from the experiment, and $\lambda$ is a scaling factor for the smoothness term.
 
