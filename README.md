@@ -5,8 +5,8 @@ This repository implements a neural network model for predicting cyclic voltamme
 
 ## Overview
 
-- **Input**: voltage `E`, sweep direction `d ∈ {+1, −1}`, and conditioning parameters (e.g., mass, temperature, electrolyte).
-- **Output**: predicted current `I(E, d, x_c)`.
+- **Input**: voltage $E$, sweep direction $d \in {+1, −1}$, and conditioning parameters (e.g., mass, temperature, electrolyte).
+- **Output**: predicted current $I(E, d, x_c)$.
 - Training data consists of 8 experimental CV curves (1 cycle each, 264 points).
 
 The model is designed to interpolate between experiments and generate curves for unseen configurations.
