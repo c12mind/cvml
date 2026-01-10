@@ -50,6 +50,7 @@ def make_curve(model, dataset, ds_stats, run_name, epoch):
     E_real_all = []
     scan_dir_all = []
 
+    print(ds_stats)
     dataset = dataset.cuda()
     I_target = dataset[:, 0].unsqueeze(1)
     # print(I_target, I_target.shape)

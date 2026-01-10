@@ -184,7 +184,7 @@ def collate_fn(batch):
     }
 
 
-def load_data(config):
+def _load_data(config):
 
     batch_sz = config["batch_sz"]
     leave_out = config["leave_out"]
@@ -231,7 +231,7 @@ def load_data(config):
     
 
 # TODO: fix the loading, fast loading seems to break the loaded current values
-def _load_data(config):
+def load_data(config):
     leave_out = config["leave_out"]
     filenames = [
         k["name"].split(".")[0] for k in config["data_files"]
@@ -245,9 +245,6 @@ def _load_data(config):
     train_subset = ~val_subset
     train_df = ds_handler.dataset[train_subset].drop(columns=["name"])
     val_df = ds_handler.dataset[val_subset].drop(columns=["name"])
-    print(val_df)
     train_ds = torch.tensor(train_df.values, dtype=torch.double)
     val_ds = torch.tensor(val_df.values, dtype=torch.double)
-    print("-------------------------")
-    print(val_ds)
     return train_ds, val_ds, ds_handler
