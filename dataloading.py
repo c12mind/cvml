@@ -230,7 +230,6 @@ def _load_data(config):
 
     
 
-# TODO: fix the loading, fast loading seems to break the loaded current values
 def load_data(config):
     leave_out = config["leave_out"]
     filenames = [
@@ -245,6 +244,6 @@ def load_data(config):
     train_subset = ~val_subset
     train_df = ds_handler.dataset[train_subset].drop(columns=["name"])
     val_df = ds_handler.dataset[val_subset].drop(columns=["name"])
-    train_ds = torch.tensor(train_df.values, dtype=torch.double)
-    val_ds = torch.tensor(val_df.values, dtype=torch.double)
+    train_ds = torch.tensor(train_df.values, dtype=torch.float32)
+    val_ds = torch.tensor(val_df.values, dtype=torch.float32)
     return train_ds, val_ds, ds_handler

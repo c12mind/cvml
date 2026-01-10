@@ -90,8 +90,8 @@ def _val_step(model, dataloader, loss_func):
 def train_step(model, dataset, loss_func, opt):
     model.train()
     dataset = dataset.cuda()
-    I_target = dataset[:, 0].unsqueeze(1)
-    E = dataset[:, 1].unsqueeze(1)
+    E = dataset[:, 0].unsqueeze(1)
+    I_target = dataset[:, 1].unsqueeze(1)
     scan_dir = dataset[:, -1].unsqueeze(1)
     cond_features = dataset[:, 2: -1]
 
@@ -108,8 +108,8 @@ def train_step(model, dataset, loss_func, opt):
 def val_step(model, dataset, loss_func):
     model.eval()
     dataset = dataset.cuda()
-    I_target = dataset[:, 0].unsqueeze(1)
-    E = dataset[:, 1].unsqueeze(1)
+    E = dataset[:, 0].unsqueeze(1)
+    I_target = dataset[:, 1].unsqueeze(1)
     scan_dir = dataset[:, -1].unsqueeze(1)
  
     cond_features = dataset[:, 2: -1]
