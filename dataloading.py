@@ -223,4 +223,31 @@ def load_data(config):
         shuffle=False
     )
 
+    for batch in val_dl:
+        print(batch["I_target"], batch["I_target"].shape)
+
     return train_dl, val_dl, ds_handler
+
+    
+
+# TODO: fix the loading, fast loading seems to break the loaded current values
+def _load_data(config):
+    leave_out = config["leave_out"]
+    filenames = [
+        k["name"].split(".")[0] for k in config["data_files"]
+    ]
+    for name in leave_out:
+        if name not in filenames:
+            assert False, f"Cannot leave out experiment {name}: does not exist!"
+    
+    ds_handler = DatasetHandler(config)
+    val_subset = ds_handler.dataset["name"].isin(leave_out)
+    train_subset = ~val_subset
+    train_df = ds_handler.dataset[train_subset].drop(columns=["name"])
+    val_df = ds_handler.dataset[val_subset].drop(columns=["name"])
+    print(val_df)
+    train_ds = torch.tensor(train_df.values, dtype=torch.double)
+    val_ds = torch.tensor(val_df.values, dtype=torch.double)
+    print("-------------------------")
+    print(val_ds)
+    return train_ds, val_ds, ds_handler

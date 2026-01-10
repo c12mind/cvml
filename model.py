@@ -52,7 +52,7 @@ class CV_PINN(nn.Module):
         return net_outputs
 
         
-def train_step(model, dataloader, loss_func, opt):
+def _train_step(model, dataloader, loss_func, opt):
     model.train()
     for batch in dataloader:
         I_target = batch["I_target"].cuda()
@@ -71,7 +71,7 @@ def train_step(model, dataloader, loss_func, opt):
 
     return loss
 
-def val_step(model, dataloader, loss_func):
+def _val_step(model, dataloader, loss_func):
     model.eval()
     for batch in dataloader:
         I_target = batch["I_target"].cuda()
@@ -86,6 +86,40 @@ def val_step(model, dataloader, loss_func):
         )
     return loss
 
+
+def train_step(model, dataset, loss_func, opt):
+    model.train()
+    dataset = dataset.cuda()
+    I_target = dataset[:, 0].unsqueeze(1)
+    E = dataset[:, 1].unsqueeze(1)
+    scan_dir = dataset[:, -1].unsqueeze(1)
+    cond_features = dataset[:, 2: -1]
+
+    net_outs = model(E, scan_dir, cond_features)
+    loss = loss_func(
+        I_target, net_outs["I_pred"],
+        net_outs["d2I_dE2"],
+    )
+    loss.backward()
+    opt.step()
+    opt.zero_grad()
+    return loss
+
+def val_step(model, dataset, loss_func):
+    model.eval()
+    dataset = dataset.cuda()
+    I_target = dataset[:, 0].unsqueeze(1)
+    E = dataset[:, 1].unsqueeze(1)
+    scan_dir = dataset[:, -1].unsqueeze(1)
+ 
+    cond_features = dataset[:, 2: -1]
+
+    net_outs = model(E, scan_dir, cond_features)
+    loss = loss_func(
+        I_target, net_outs["I_pred"],
+        net_outs["d2I_dE2"],
+    )
+    return loss
 
 class PINN_Loss:
     def __init__(self, config):
@@ -107,3 +141,18 @@ class PINN_Loss:
             self.lambda_smooth * smooth_loss
         )
         return loss
+
+def get_average_model_dict(model_dicts):
+    averaged_dict = None
+    num_models = len(model_dicts)
+
+    for d in model_dicts:
+        if averaged_dict is None:
+            averaged_dict = d.copy()
+        for k, v in d.items():
+            averaged_dict[k] += v
+    
+    for k, v in averaged_dict.items():
+        averaged_dict[k] /= num_models
+
+    return averaged_dict

@@ -44,22 +44,26 @@ def load_pretrained_model(config, checkpoint):
     
     return model
 
-def make_curve(model, val_dl, ds_stats, run_name, epoch):
+def make_curve(model, dataset, ds_stats, run_name, epoch):
     I_pred_all = []
     I_real_all = []
     E_real_all = []
     scan_dir_all = []
-    for batch in val_dl:
-        I_real = batch["I_target"]
-        E = batch["E"].cuda()
-        scan_dir = batch["scan_dir"].cuda()
-        cond_features = batch["cond_features"].cuda()
-        outs = model(E, scan_dir, cond_features)
 
-        I_pred_all.append(outs["I_pred"])
-        I_real_all.append(I_real)
-        E_real_all.append(E)
-        scan_dir_all.append(scan_dir)
+    dataset = dataset.cuda()
+    I_target = dataset[:, 0].unsqueeze(1)
+    # print(I_target, I_target.shape)
+    exit()
+    E = dataset[:, 1].unsqueeze(1)
+    scan_dir = dataset[:, -1].unsqueeze(1)
+    cond_features = dataset[:, 2: -1]
+
+    outs = model(E, scan_dir, cond_features)
+
+    I_pred_all.append(outs["I_pred"])
+    I_real_all.append(I_target)
+    E_real_all.append(E)
+    scan_dir_all.append(scan_dir)
 
 
     xs = torch.cat(E_real_all).squeeze().detach().cpu().numpy().flatten()
@@ -74,6 +78,7 @@ def make_curve(model, val_dl, ds_stats, run_name, epoch):
     I_std = ds_stats["current_stats"]["std"]
     mass_mean = ds_stats["mass_stats"]["mean"]
     mass_std = ds_stats["mass_stats"]["std"]
+
 
 
     xs = (xs * E_halfrange) + E_mid
