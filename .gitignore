@@ -3,3 +3,4 @@ saved_models
 *.csv
 *.xlsx
 wandb
+rcs_template
