@@ -4,3 +4,4 @@ saved_models
 *.xlsx
 wandb
 rcs_template
+env_setup_done

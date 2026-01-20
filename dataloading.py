@@ -207,7 +207,9 @@ def load_data(config):
         train_ds,
         batch_size=batch_sz,
         collate_fn=collate_fn,
-        num_workers=4,
+        num_workers=32,
+        pin_memory=True,
+        persistent_workers=True,
         shuffle=True
     )
 
@@ -215,7 +217,9 @@ def load_data(config):
         val_ds,
         batch_size=batch_sz,
         collate_fn=collate_fn,
-        num_workers=4,
+        num_workers=32,
+        pin_memory=True,
+        persistent_workers=True,
         shuffle=False
     )
 
