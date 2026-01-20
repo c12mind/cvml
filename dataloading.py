@@ -51,7 +51,6 @@ class DatasetHandler:
 
         self.add_scan_direction()
         self.normalise_dataset()
-        print(self.dataset)
 
     def add_scan_direction(self):
         self.dataset["scan_dir"] = (self.dataset["E_step"].shift(-1) - self.dataset["E_step"]).fillna(-1)
@@ -242,8 +241,40 @@ def load_data(config):
     ds_handler = DatasetHandler(config)
     val_subset = ds_handler.dataset["name"].isin(leave_out)
     train_subset = ~val_subset
-    train_df = ds_handler.dataset[train_subset].drop(columns=["name"])
-    val_df = ds_handler.dataset[val_subset].drop(columns=["name"])
+    train_df = ds_handler.dataset[train_subset]
+    val_df = ds_handler.dataset[val_subset]
+    train_names = pd.unique(train_df["name"]).tolist()
+    val_names = pd.unique(val_df["name"]).tolist()
+    train_exp_count = len(train_names)
+    val_exp_count = len(val_names)
+
+
+    train_name_mapping = {}
+    for i, name in enumerate(train_names):
+        train_name_mapping[name] = i
+
+    val_name_mapping = {}
+    for i, name in enumerate(val_names):
+        val_name_mapping[name] = i
+
+    train_df = train_df.copy()
+    train_df["name"] = pd.to_numeric(
+        train_df["name"].map(train_name_mapping),
+        errors="raise"
+    ).astype("float32")
+    val_df = val_df.copy()
+    val_df["name"] = pd.to_numeric(
+        val_df["name"].map(val_name_mapping),
+        errors="raise"
+    ).astype("float32")
     train_ds = torch.tensor(train_df.values, dtype=torch.float32)
     val_ds = torch.tensor(val_df.values, dtype=torch.float32)
-    return train_ds, val_ds, ds_handler
+
+    data = {
+        "train_ds": train_ds,
+        "train_exp_count": train_exp_count,
+        "val_ds": val_ds,
+        "val_exp_count": val_exp_count,
+        "ds_handler": ds_handler,
+    }
+    return data
