@@ -196,7 +196,7 @@ Thus, the MLP must have a ReLU activation function between each hidden layer, gi
 \begin{figure*}
  \centering
  \includegraphics[width=\linewidth]{model_arch.png}
- \caption{An overview of the training pipeline and model architecture.}
+ \caption{An overview of the training pipeline and model architecture, incorporating dropout after the largest layer to discourage overfitting. The input is a 6-dimensional vector consisting of the potential step, and several experimental conditions under which the electrode material was sysnthesised. Ground truth hysteresis curves shown in blue and model prediction shown in orange.}
  \label{fig:model_arch}
 \end{figure*}
 
@@ -207,7 +207,7 @@ Thus, the MLP must have a ReLU activation function between each hidden layer, gi
 Computing all such partials completes the ``backwards'' pass of the training step -- a process known as backpropagation --  and gives us $\frac{\partial L}{\partial W_i}$, which tells the model how much, and the direction in which $W$ should change in order to minimise $L$. Repeating these forward and backwards passes over the MLP over and over again brings the weights closer to their ``ideal'' values -- ones for which $L$ is minimised. In other words, the optimsing algorithm uses the difference between the output of the model and its target to update $W$ in the correct direction. This is what is meant by training a machine learning model.  
 
 \subsection{Previous work}
-The application of machine learning systems to the prediction of specific capacitance values is varied -- some previous investigations involve predicting specific capacitance directly from experimental conditions~\cite{kumaryogeshMachineLearningApproach2025}, while others use these experimental conditions to predict hysteresis curves~\cite{ravichandranMachineLearningBasedPrediction2024}; the latter approach allows the indirect calculation of specific capacitance $C_{sp}$, which is proportional to the area between charge and discharge curves. It is this latter approach that is used by the present study, because predicting the full charge-discharge dynamics of cyclic voltammetry allows the model to generalise better to a wider range of conditions~\cite{deebansokCapacitiveTendencyConcept2024} -- especially important given the limited data available for this study. Using this approach, $C_{sp}$ is given by:
+The application of machine learning systems to the prediction of specific capacitance values is varied -- some previous investigations involve predicting specific capacitance directly from experimental conditions~\cite{kumaryogeshMachineLearningApproach2025}, while others use these experimental conditions to predict hysteresis \emph{\textbf{Note to Alex: Is this the correct terminology? Are CV curves hysteresis loops?}} curves~\cite{ravichandranMachineLearningBasedPrediction2024}; the latter approach allows the indirect calculation of specific capacitance $C_{sp}$, which is proportional to the area between charge and discharge curves. It is this latter approach that is used by the present study, because predicting the full charge-discharge dynamics of cyclic voltammetry allows the model to generalise better to a wider range of conditions~\cite{deebansokCapacitiveTendencyConcept2024} -- especially important given the limited data available for this study. Using this approach, $C_{sp}$ is given by:
 
 \begin{equation}
   \label{eq:specific_cap}
@@ -239,13 +239,23 @@ BCMS9      & 5.7    & 700      & 2.8      & 2     & Ethaline
 \end{tblr}
 \end{table}
 
-Notice that the various inputs span many orders of magnitude -- this is a problem for machine learning models, which work best when their inputs are all near or around -1 to 1 (rephrase this). Using raw features such as those presented in Table~\ref{tab:dataset} mean that ones with large absolute values dominate the weights of the model, even though they may not be as important, and vice versa, which can lead to lower performance~\cite{kimInvestigatingImpactData2025}. For this reason, all features are scaled across all cycles such that they have zero mean and 1 standard deviation. To transform an individual instance of a feature $d_i$ (e.g. electrode mass, temperature) to its scaled value $d_{norm,i}$:
+Notice that the various inputs span many orders of magnitude -- this is a problem for machine learning models, which work best when their inputs are all near or around -1 to 1 (rephrase this). Using raw features such as those presented in Table~\ref{tab:dataset} mean that ones with large absolute values dominate the weights of the model, even though they may not be as important, and vice versa, which can lead to lower performance~\cite{kimInvestigatingImpactData2025}. For this reason, all features are scaled across all cycles such that they have zero mean and unit standard deviation. To transform an individual instance of a feature $d_i$ (e.g. electrode mass, temperature) to its scaled value $d_{norm,i}$:
 
 \begin{equation}\label{eq:norm}
   d_{norm,i} = \frac{d_i - \mu(D)}{\sigma(D)}
 \end{equation}
 
-where $D$ is the collection of all the values for this feature, $\mu$ is the mean of values in $D$, and $\sigma$ is their standard deviation. These scaled values are used in all subsequent machine learning operations, and final outputs are de-normalised using the inverse of Equation~\ref{eq:norm} for display and comparison with experimental values.
+where $D$ is the collection of all the values for this feature, $\mu$ is the mean of values in $D$, and $\sigma$ is their standard deviation. These scaled values are used in all subsequent machine learning operations, and final outputs are de-normalised using the inverse of Equation~\ref{eq:norm} for display and comparison with experimental values. Current values were also transformed in this way. However, the potential step $E$ was rescaled slightly differently: rather than ensuring zero mean and unit variance, we rescale them such that the minimum potential across the whole dataset is -1 and the maximum is +1:
+
+\begin{align}
+  E_{mid} &= \frac{E_{max} + E_{min}}{2} \nonumber \\
+  E_{half-range} &= \frac{E_{max} - E_{min}}{2} \nonumber \\
+  E_{norm} &= \frac{E - E_{mid}}{E_{half-range}}
+\end{align}
+
+where $E_{min}$ and $E_{max}$ are the minimum and maximum potential values \emph{across the whole dataset}. This scaling ensures that all cycles share a common and bounded potential domain, making it easier for the model to lear consistent relationships across different experimental conditions.
+
+The input to the model is therefore a 6 dimensional, normalised feature vector that consists of a potential step and experimental conditions under which the electrode material was synthesised. 
 
 
 \subsection{Experimental design and model architecture}
