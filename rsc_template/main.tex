@@ -196,7 +196,7 @@ Thus, the MLP must have a ReLU activation function between each hidden layer, gi
 \begin{figure*}
  \centering
  \includegraphics[width=\linewidth]{model_arch.png}
- \caption{An overview of the training pipeline and model architecture, incorporating dropout after the largest layer to discourage overfitting. The input is a 6-dimensional vector consisting of the potential step, and several experimental conditions under which the electrode material was sysnthesised. Ground truth hysteresis curves shown in blue and model prediction shown in orange.}
+ \caption{An overview of the training pipeline and model architecture, incorporating dropout after the largest layer to discourage overfitting. The input is a 6-dimensional vector consisting of the potential step, and several experimental conditions under which the electrode material was sysnthesised, and the output is a prediction of the current value at that potential. Ground truth hysteresis curves shown in blue and model prediction shown in orange.}
  \label{fig:model_arch}
 \end{figure*}
 
@@ -255,8 +255,7 @@ where $D$ is the collection of all the values for this feature, $\mu$ is the mea
 
 where $E_{min}$ and $E_{max}$ are the minimum and maximum potential values \emph{across the whole dataset}. This scaling ensures that all cycles share a common and bounded potential domain, making it easier for the model to lear consistent relationships across different experimental conditions.
 
-The input to the model is therefore a 6 dimensional, normalised feature vector that consists of a potential step and experimental conditions under which the electrode material was synthesised. 
-
+The input to the model is therefore a 6 dimensional, normalised feature vector that consists of a potential step and experimental conditions under which the electrode material was synthesised, and the output is the current value at the potential step.  
 
 \subsection{Experimental design and model architecture}
 \label{subsec:arch}
