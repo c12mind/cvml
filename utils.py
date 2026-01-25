@@ -69,7 +69,7 @@ def plot_result(result_obj, offset_param=0.2):
     plt.plot(xs, np.ones_like(xs), color="black", label="Target", alpha=0.5, linestyle="--")
     plt.legend(ncols=5)
     plt.ylabel("Average Normalised $C_{sp}$")
-    plt.xlabel("Experiment")
+    plt.xlabel("Cycle")
     plt.xticks(xs, experiments)
     plt.savefig("test.png")
 
