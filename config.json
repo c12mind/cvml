@@ -1,13 +1,6 @@
 {
     "data_files": [
         {
-            "name": "BCMS1Eth.csv", 
-            "voltage": 1.5, 
-            "temp": 800, 
-            "time_h": 3,
-            "mass_mg": 0.7
-        },
-        {
             "name": "BCMS2Eth.csv",
             "voltage": 2,
             "temp": 800,
@@ -61,14 +54,15 @@
     "batch_sz": 4096,
     "scanrate_V": 0.1,
     "lambda_smooth": 0.005,
+    "lambda_area": 0.1,
     "lambda_dir": 0.1,
-    "learning_rate": 2e-5,
-    "epochs": 1000,
-    "save_freq": 100,
+    "learning_rate": 2e-6,
+    "epochs": 10000,
+    "save_freq": 1000,
     "hidden_sz": 128,
     "dropout": 0.0,
-    "leave_out": ["BCMS2Eth"],
-    "use_wandb": true,
+    "leave_out": ["BCMS9Eth"],
+    "use_wandb": false,
     "chunksize": 1,
     "model_dir": "saved_models",
     "project_name": "Cyclic_volummetry_ML"

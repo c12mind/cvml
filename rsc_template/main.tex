@@ -1,0 +1,367 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%This is the LaTeX ARTICLE template for RSC journals
+%Copyright The Royal Society of Chemistry 2016
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[twoside,twocolumn,9pt]{article}
+\usepackage{extsizes}
+\usepackage[super,sort&compress,comma]{natbib} 
+\usepackage[version=3]{mhchem}
+\usepackage[left=1.5cm, right=1.5cm, top=1.785cm, bottom=2.0cm]{geometry}
+\usepackage{balance}
+\usepackage{mathptmx}
+\usepackage{sectsty}
+\usepackage{graphicx} 
+\usepackage{lastpage}
+\usepackage[format=plain,justification=justified,singlelinecheck=false,font={stretch=1.125,small,sf},labelfont=bf,labelsep=space]{caption}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{fnpos}
+\usepackage[english]{babel}
+\addto{\captionsenglish}{%
+  \renewcommand{\refname}{Notes and references}
+}
+\usepackage{array}
+\usepackage{droidsans}
+\usepackage{charter}
+\usepackage[T1]{fontenc}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{setspace}
+\usepackage[compact]{titlesec}
+\usepackage{hyperref}
+%%%Please don't disable any packages in the preamble, as this may cause the template to display incorrectly.%%%
+
+
+% \usepackage{epstopdf}%This line makes .eps figures into .pdf - please comment out if not required.
+% self-defined imports
+\usepackage{tabularray}
+\usepackage{booktabs}
+\usepackage[inter-unit-product =\cdot]{siunitx}
+\usepackage{stfloats}
+\graphicspath{ {./img/} }
+
+
+\definecolor{cream}{RGB}{222,217,201}
+
+%%%%%%%%% Preamble of the bibliography, can be commented or deleted 
+% \def\bibpreamble{For the reference section, the style file \texttt{rsc.bst} can be used to generate the correct reference style.\footnotemark[4]
+% \begin{enumerate}
+% \item{Citations should appear here in the format A. Name, B. Name and C. Name, \emph{Journal Title}, 2000, \textbf{35}, 3523;} 
+% \item{A. Name, B. Name and C. Name, \emph{Journal Title, 2000}, \textbf{35}, 3523.}
+% \end{enumerate}
+% ... \\\\
+% We encourage the citation of primary research over review articles, where appropriate, in order to give credit to those who first reported a finding. \href{https://www.rsc.org/news-events/articles/2020/jun/rsc-signs-dora/}{Find out more about our commitments to the principles of San Francisco Declaration on Research Assessment (DORA).}}
+%%%%%%%%% 
+
+\begin{document}
+
+\pagestyle{fancy}
+\thispagestyle{plain}
+\fancypagestyle{plain}{
+%%%HEADER%%%
+\renewcommand{\headrulewidth}{0pt}
+}
+%%%END OF HEADER%%%
+
+%%%PAGE SETUP - Please do not change any commands within this section%%%
+\makeFNbottom
+\makeatletter
+\renewcommand\LARGE{\@setfontsize\LARGE{15pt}{17}}
+\renewcommand\Large{\@setfontsize\Large{12pt}{14}}
+\renewcommand\large{\@setfontsize\large{10pt}{12}}
+\renewcommand\footnotesize{\@setfontsize\footnotesize{7pt}{10}}
+\makeatother
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\renewcommand\footnoterule{\vspace*{1pt}% 
+\color{cream}\hrule width 3.5in height 0.4pt \color{black}\vspace*{5pt}} 
+\setcounter{secnumdepth}{5}
+
+\makeatletter 
+\renewcommand\@biblabel[1]{#1}            
+\renewcommand\@makefntext[1]% 
+{\noindent\makebox[0pt][r]{\@thefnmark\,}#1}
+\makeatother 
+\renewcommand{\figurename}{\small{Fig.}~}
+\sectionfont{\sffamily\Large}
+\subsectionfont{\normalsize}
+\subsubsectionfont{\bf}
+\setstretch{1.125} %In particular, please do not alter this line.
+\setlength{\skip\footins}{0.8cm}
+\setlength{\footnotesep}{0.25cm}
+\setlength{\jot}{10pt}
+\titlespacing*{\section}{0pt}{4pt}{4pt}
+\titlespacing*{\subsection}{0pt}{15pt}{1pt}
+%%%END OF PAGE SETUP%%%
+
+%%%FOOTER%%%
+\fancyfoot{}
+\fancyfoot[LO,RE]{\vspace{-7.1pt}\includegraphics[height=9pt]{head_foot/LF}}
+\fancyfoot[CO]{\vspace{-7.1pt}\hspace{13.2cm}\includegraphics{head_foot/RF}}
+\fancyfoot[CE]{\vspace{-7.2pt}\hspace{-14.2cm}\includegraphics{head_foot/RF}}
+\fancyfoot[RO]{\footnotesize{\sffamily{1--\pageref{LastPage} ~\textbar  \hspace{2pt}\thepage}}}
+\fancyfoot[LE]{\footnotesize{\sffamily{\thepage~\textbar\hspace{3.45cm} 1--\pageref{LastPage}}}}
+\fancyhead{}
+\renewcommand{\headrulewidth}{0pt} 
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\arrayrulewidth}{1pt}
+\setlength{\columnsep}{6.5mm}
+\setlength\bibsep{1pt}
+%%%END OF FOOTER%%%
+
+%%%FIGURE SETUP - please do not change any commands within this section%%%
+\makeatletter 
+\newlength{\figrulesep} 
+\setlength{\figrulesep}{0.5\textfloatsep} 
+
+\newcommand{\topfigrule}{\vspace*{-1pt}% 
+\noindent{\color{cream}\rule[-\figrulesep]{\columnwidth}{1.5pt}} }
+
+\newcommand{\botfigrule}{\vspace*{-2pt}% 
+\noindent{\color{cream}\rule[\figrulesep]{\columnwidth}{1.5pt}} }
+
+\newcommand{\dblfigrule}{\vspace*{-1pt}% 
+\noindent{\color{cream}\rule[-\figrulesep]{\textwidth}{1.5pt}} }
+
+\makeatother
+%%%END OF FIGURE SETUP%%%
+
+%%%TITLE, AUTHORS AND ABSTRACT%%%
+\twocolumn[
+  \begin{@twocolumnfalse}
+{\includegraphics[height=30pt]{head_foot/journal_name}\hfill\raisebox{0pt}[0pt][0pt]{\includegraphics[height=55pt]{head_foot/RSC_LOGO_CMYK}}\\[1ex]
+\includegraphics[width=18.5cm]{head_foot/header_bar}}\par
+\vspace{1em}
+\sffamily
+\begin{tabular}{m{4.5cm} p{13.5cm} }
+
+\includegraphics{head_foot/DOI} & \noindent\LARGE{\textbf{Performance of upcycled tyre-derived carbon in ethaline-glycol ionic electrolytes for sustainable supercapacitors: modelling cyclic voltammetry using standard and machine-learning methods.}} \\%Article title goes here instead of the text "This is the title"
+\vspace{0.3cm} & \vspace{0.3cm} \\
+
+ & \noindent\large{Maria A. Sandoval-Riofrio,\textit{$^{1, a}$} and Kavisha Jayathunge\textit{$^{2, a}$}} \\%Author names go here instead of "Full name", etc.
+
+\includegraphics{head_foot/dates} & \noindent\normalsize{This study explores the development of sustainable supercapacitors using electrochemically activated carbon derived from plastic and tyre waste as electrode materials and ethaline, a deep eutectic solvent, as a green electrolyte. The electrochemical molten salts (EMS) process was employed to activate black carbon, a waste byproduct from tyre recycling, resulting in significant enhancements in carbon properties, including a 39.4\% increase in BET surface area (from \SI{43.1}{\meter\square\per\gram} to \SI{60.09}{\meter\square\per\gram}) and improved pore volume and size distribution. These findings establish the EMS process as a scalable and effective method for producing high-performance porous carbon materials. Supercapacitors assembled with EMS-activated carbon and ethaline exhibited remarkable electrochemical performance, achieving a specific capacitance of \SI{210.56}{\farad\per\gram}, surpassing many conventional aqueous and organic systems. Combined CV and EIS analyses revealed primarily capacitive behaviour with notable contributions from diffusion processes, particularly at elevated temperatures. Specific capacitances of 166.14, 121.63, and \SI{69.81}{\farad\per\gram} at \SI{45}{\degreeCelsius}, \SI{65}{\degreeCelsius}, and \SI{90}{\degreeCelsius}, respectively, underscored the thermal sensitivity and ionic mobility of ethaline. These results highlight the potential of integrating waste-derived carbon materials with environmentally friendly electrolytes to create efficient, sustainable energy storage systems. Further studies are recommended to optimise electrolyte performance and address decomposition mechanisms for broader applications.} \\%The abstrast goes here instead of the text "The abstract should be..."
+
+\end{tabular}
+
+ \end{@twocolumnfalse} \vspace{0.6cm}
+
+  ]
+%%%END OF TITLE, AUTHORS AND ABSTRACT%%%
+
+%%%FONT SETUP - please do not change any commands within this section
+\renewcommand*\rmdefault{bch}\normalfont\upshape
+\rmfamily
+\section*{}
+\vspace{-1cm}
+
+
+%%%FOOTNOTES%%%
+
+\footnotetext{\textit{$^{1}$~Department of Engineering; E-mail: msandoval2@bournemouth.ac.uk}}
+\footnotetext{\textit{$^{2}$~National Centre for Computer Animation; E-mail: kjayathunge@bournemouth.ac.uk}}
+\footnotetext{\textit{$^{a}$~Talbot Campus, Bournemouth University, Fern Barrow, Poole BH12 5BB, UK}}
+
+%Please use \dag to cite the ESI in the main text of the article.
+%If you article does not have ESI please remove the the \dag symbol from the title and the footnotetext below.
+%\footnotetext{\dag~Supplementary Information available: [details of any supplementary information available should be included here]. See DOI: 00.0000/00000000.}
+%additional addresses can be cited as above using the lower-case letters, c, d, e... If all authors are from the same address, no letter is required
+
+% \footnotetext{\dag~Additional footnotes to the title and authors can be included \textit{e.g.}\ `Present address:' or `These authors contributed equally to this work' as above using the symbols: \ddag, \textsection, and \P. Please place the appropriate symbol next to the author's name and include a \texttt{\textbackslash footnotetext} entry in the the correct place in the list.}
+
+
+%%%END OF FOOTNOTES%%%
+
+%%%MAIN TEXT%%%%
+\section{Deep learning analysis}
+\label{sec:ml_analysis}
+Machine learning models can be thought of as universal function approximators. That is, provided enough data to learn from, they are able to model any continuous, closed domain function to an arbitrary degree of accuracy~\cite{geuchenUniversalApproximationComplexvalued2025}. Such models consist of interconnected ``neurons'' arranged in layers. These connections are dense, meaning each neuron is connected to all other neurons in the previous and next layer, giving rise to the common ``fully connected'' layer terminology. We will refer to a single layer as $F_{i}^{n,m}$ where $i$ is the position of the layer, $n$ is the input size (the number of input neurons expected), and $m$ is the output size. The layer computes:
+
+\begin{equation}
+\hat{y} = F_{i}^{n, m}(x) = W_{i}x + b_{i}
+\end{equation}
+
+
+where $x$ is an n-dimensional vector, $\hat{y}$ is an m-dimensional vector, $W_i$ is an $n \times m$ weight matrix and $b_i$ is a constant term.  Layers may be chained sequentially, as long as the inner dimensions of adjacent layers are equal, i.e. $W_i$ and $W_{i+1}$ can be multiplied. Such a sequence of connected layers is commonly referred to as a Multilayer Perceptron (MLP). An important element of the layers of the MLP is the activation function, which is applied to the output of each neuron, and introduces non-linearity into the model. This is essential for an MLP to fit the definition of a universal function approximator as defined earlier, because any sequence of fully connected layers must necessarily collapse into a single linear transform, which is not powerful enough to represent more complicated functions. The Rectified Linear Unit function (ReLU) is a popular activation function~\cite{agarapDeepLearningUsing2019} designed for this purpose and is defined as follows:
+
+\begin{equation}
+\text{ReLU}(x) = \begin{cases}
+  0 & x \leq 0 \\
+  x & x > 0
+\end{cases}
+\end{equation}
+
+Thus, the MLP must have a ReLU activation function between each hidden layer, giving the final model structure as laid out in Figure~\ref{fig:model_arch}. Obtaining a $\hat{y}$ prediction from an MLP completes the ``forward pass'' part of training. The prediction is then evaluated against the target value $y$ (also called the ground truth value) using a cost function $L$ -- see Equations~\ref{eq:loss_current}~-~\ref{eq:loss} for how it is defined for this application. The partial derivative of $L$ is calculated with respect to each parameter $w_{i}^{n,m}$ in $W_i$: 
+
+\begin{figure*}
+ \centering
+ \includegraphics[width=\linewidth]{model_arch.png}
+ \caption{An overview of the training pipeline and model architecture, incorporating dropout after the largest layer to discourage overfitting. The input is a 6-dimensional vector consisting of the potential step, and several experimental conditions under which the electrode material was sysnthesised, and the output is a prediction of the current value at that potential. Ground truth hysteresis curves shown in blue and model prediction shown in orange.}
+ \label{fig:model_arch}
+\end{figure*}
+
+\begin{equation}
+\frac{\partial L}{\partial w_{i}^{n,m}} = \frac{\partial L }{\partial \hat{y}} \cdot \frac{\partial \hat{y}}{\partial w_{i}^{n,m}}
+\end{equation}
+
+Computing all such partials completes the ``backwards'' pass of the training step -- a process known as backpropagation --  and gives us $\frac{\partial L}{\partial W_i}$, which tells the model how much, and the direction in which $W$ should change in order to minimise $L$. Repeating these forward and backwards passes over the MLP over and over again brings the weights closer to their ``ideal'' values -- ones for which $L$ is minimised. In other words, the optimsing algorithm uses the difference between the output of the model and its target to update $W$ in the correct direction. This is what is meant by training a machine learning model.  
+
+\subsection{Previous work}
+The application of machine learning systems to the prediction of specific capacitance values is varied -- some previous investigations involve predicting specific capacitance directly from experimental conditions~\cite{kumaryogeshMachineLearningApproach2025}, while others use these experimental conditions to predict hysteresis \emph{\textbf{Note to Alex: Is this the correct terminology? Are CV curves hysteresis loops?}} curves~\cite{ravichandranMachineLearningBasedPrediction2024}; the latter approach allows the indirect calculation of specific capacitance $C_{sp}$, which is proportional to the area between charge and discharge curves. It is this latter approach that is used by the present study, because predicting the full charge-discharge dynamics of cyclic voltammetry allows the model to generalise better to a wider range of conditions~\cite{deebansokCapacitiveTendencyConcept2024} -- especially important given the limited data available for this study. Using this approach, $C_{sp}$ is given by:
+
+\begin{equation}
+  \label{eq:specific_cap}
+  C_{sp} = \frac{\int I_{pred}(E) \,dE}{ 2 \cdot \nu \cdot m \cdot \Delta V}
+\end{equation}
+
+
+where $I_{pred}$ is the function that is approximated by the MLP, $E$ is the potential, $\nu$ is the scanrate, m is the total mass of the active material in the electrodes, and $\Delta V$ is the change in voltage over the whole charge/discharge cycle.
+
+\subsection{Dataset}
+The complete dataset is made up of current density samples \emph{\textbf{(ask Alex if this is the correct term)}} from 7 cyclic voltammetry cycles -- see Table~\ref{tab:dataset}. These were collected via potentiostat with a scanrate of \SI{100}{\milli\volt\per\second}. Each cycle consists of 264 rows, with columns for current (I / \unit{\ampere}), voltage step (E / \unit{\volt}), active electrode mass (M / \unit{\milli\gram}), temperature (T / \unit{\degreeCelsius}), electrolysis voltage (V$_e$ / \unit{\volt}), electrolysis duration (D / \unit{\hour}), and scan direction (S). The last feature tells the model if the particular point is on the charge or discharge curve and is represented by either +1 (charging)  or -1 (discharging).  
+
+\begin{table}
+\caption{Characteristics of each cycle that constitutes the dataset used for training our model. The scanrate was \SI{100}{\milli\volt\per\second} in all cases.}
+\label{tab:dataset}
+\small
+\centering
+\begin{tblr}{
+  hline{1-2} = {-}{}
+}
+Cycle      & M / mg  & T / $^{\circ}$C& V$_e$ / V & D / h & Electrolyte \\
+BCMS2      & 1.9    & 800      & 2        & 2     & Ethaline        \\
+BCMS2.1    & 0.7    & 650      & 2        & 3     & Ethaline        \\
+BCMS3      & 2.2    & 750      & 2        & 2     & Ethaline        \\
+BCMS6      & 0.28   & 700      & 2.5      & 2     & Ethaline        \\
+BCMS7      & 1.7    & 750      & 2        & 2     & Ethaline        \\
+BCMS8      & 0.8    & 700      & 2.5      & 2     & Ethaline + \ce{KOH} 1\%   \\
+BCMS9      & 5.7    & 700      & 2.8      & 2     & Ethaline       
+\end{tblr}
+\end{table}
+
+Notice that the various inputs span many orders of magnitude -- this is a problem for machine learning models, which work best when their inputs are all near or around -1 to 1 (rephrase this). Using raw features such as those presented in Table~\ref{tab:dataset} mean that ones with large absolute values dominate the weights of the model, even though they may not be as important, and vice versa, which can lead to lower performance~\cite{kimInvestigatingImpactData2025}. For this reason, all features are scaled across all cycles such that they have zero mean and unit standard deviation. To transform an individual instance of a feature $d_i$ (e.g. electrode mass, temperature) to its scaled value $d_{norm,i}$:
+
+\begin{equation}\label{eq:norm}
+  d_{norm,i} = \frac{d_i - \mu(D)}{\sigma(D)}
+\end{equation}
+
+where $D$ is the collection of all the values for this feature, $\mu$ is the mean of values in $D$, and $\sigma$ is their standard deviation. These scaled values are used in all subsequent machine learning operations, and final outputs are de-normalised using the inverse of Equation~\ref{eq:norm} for display and comparison with experimental values. Current values were also transformed in this way. However, the potential step $E$ was rescaled slightly differently: rather than ensuring zero mean and unit variance, we rescale them such that the minimum potential across the whole dataset is -1 and the maximum is +1:
+
+\begin{align}
+  E_{mid} &= \frac{E_{max} + E_{min}}{2} \nonumber \\
+  E_{half-range} &= \frac{E_{max} - E_{min}}{2} \nonumber \\
+  E_{norm} &= \frac{E - E_{mid}}{E_{half-range}}
+\end{align}
+
+where $E_{min}$ and $E_{max}$ are the minimum and maximum potential values \emph{across the whole dataset}. This scaling ensures that all cycles share a common and bounded potential domain, making it easier for the model to lear consistent relationships across different experimental conditions.
+
+The input to the model is therefore a 6 dimensional, normalised feature vector that consists of a potential step and experimental conditions under which the electrode material was synthesised, and the output is the current value at the potential step.  
+
+\subsection{Experimental design and model architecture}
+\label{subsec:arch}
+We employ leave-one-out cross validation when training: for any one run, the model is trained only on points from 6 of the cycles; points from the 7$^{th}$ are held out for validation. Here, validation means only evaluating the forward pass of the model and not updating the weights of the model. It is a test to determine if the model is able to generalise to ``unseen'' data, and each cycle is subjected to this treatment in turn. We repeat training runs four times independently to build confidence that the model's output is reliable.
+
+Our model is a multilayered perceptron with 4 hidden layers in between a 6-neuron input layer and a 1-neuron output layer. Please refer to Figure~\ref{fig:model_arch} for the full model architecture. Note the dropout layer, which randomly (with some probability $p$) deactivates a subset of neurons during training. This is done so that the model does not rely too heavily on any single neuron or set of neurons, thereby reducing overfitting and improving generalisation to new data~\cite{mouDropoutTrainingDatadependent2018}. Wider layers with more neurons benefit more from dropout as they are more at risk from overfitting~\cite{srivastavaDropoutSimpleWay2014}, hence the placement between $F_{2}$ and $F_{3}$.
+
+As mentioned in the Section~\ref{sec:ml_analysis}, the objective function scores the output of the MLP so it can be used in gradient calculations, which in turn are used to inform updates to the model's weights. Because the model predicts the current at a particular voltage step, part of the loss function is the mean squared error (MSE) between the predicted and actual value. This is given by:
+
+\begin{figure*}
+ \centering
+ \includegraphics[width=\linewidth]{results.png}
+ \caption{A plot reporting the average normalised $C_{sp}$ over 4 runs per cycle per experimental setting. Error bars indicate 95\% confidence intervals over runs.}
+ \label{fig:results}
+\end{figure*}
+
+\begin{equation}
+  \label{eq:loss_current}
+  L_{curr} = \frac{1}{N} \sum_{i=1}^{N} (\hat{y}_i - y_i)^{2}
+\end{equation}
+
+where $\hat{y}_i$ is the predicted current value, $y_i$ is the true value, and $N$ is the number of predicted points. Further, in order to maintain a smooth curve that is physically consistent with the behaviour of real hysteresis curves, we impose a penalty on the second derivative of the predicted current with respect to potential, discouraging sharp local curvature and jitter:
+
+\begin{equation}
+  \label{eq:loss_smooth}
+  L_{smth} =  \Bigl\lVert\frac{\partial^2 I_{pred}}{\partial E^2}\Bigr\rVert_{2}^{2}
+\end{equation}
+
+where $I_{pred}$ is the predicted current and $E$ is the potential. Finally, we also use the area of the predicted curve in another MSE loss calculation to encourage the model to produce the correct net area exhibited by the experimental curve:
+
+\begin{equation}
+  \label{eq:loss_area}
+  L_{area} = \frac{1}{M} \sum_{j=1}^{M} (\hat{a}_j - a_j)^{2}
+\end{equation}
+where $M$ is the number of cycles, $a_j$ is the actual area between the curves for a given cycle, and $\hat{a}_j$ is the area calculated using predicted current values.  The losses are combined for final  objective for the MLP:
+\begin{equation}
+  \label{eq:loss}
+  L = L_{curr} + L_{smth} + L_{area}
+\end{equation}
+
+
+In order to assess the importance of these loss functions, an ablation study was conducted to measure the impact of each objective on the final prediction. A comparison of $C_{sp}$ predicted by models under these experimental settings is given in Figure~\ref{fig:results}, and a comparison of their relative errors is given in Table~\ref{tab:errors}. The base MLP, henceforth called ``Base'' is only tasked with the $L_{curr}$ objective. The following experimental modifications were added to the Base model:
+\begin{enumerate}
+  \item  ``+ D'' -- inclusion of a \textbf{D}ropout layer, as discussed in Section~\ref{subsec:arch}
+  \item  ``+ S'' -- addition of the \textbf{S}moothing $L_{smth}$ objective to $L$
+  \item  ``+ A'' -- addition of the \textbf{A}rea $L_{area}$ objective to $L$ 
+\end{enumerate}
+
+
+\subsection{Results and discussion}
+
+
+\begin{table}
+\caption{Average error \% for each cycle over 4 independent runs. The area between the curves for a given cycle is given in ascending order in the last column. Base+D+S exhibits the least overall error across all the settings.}
+\label{tab:errors}
+\small
+\centering
+\begin{tblr}{
+  hline{1-2,9} = {-}{}
+}
+Cycle         & Base    & {Base\\+D}  & {Base\\+ D\\+S} & {Base\\+D\\+S\\+A}   & {True\\hysteresis\\area\\(arb. units)}\\
+BCMS2         & 11.491  & 6.304       & 4.745           & 0.733                &          0.207          \\
+BCMS9         & 48.238  & 24.038      & 3.645           & 24.173               &          0.222          \\
+BCMS3         & 0.552   & 10.432      & 2.449           & 19.004               &          0.249          \\
+BCMS7         & 8.795   & 2.582       & 10.220          & 9.344                &          0.278          \\
+BCMS2.1       & 28.385  & 25.788      & 17.547          & 62.284               &          0.283          \\
+BCMS8         & 4.860   & 4.703       & 3.490           & 5.534                &          1.076          \\
+BCMS6         & 6.482   & 7.548       & 8.757           & 8.310                &          1.259          \\
+Avg. Err(\%)  & 15.543  & 11.628      & \textbf{7.265}  & 18.483               &                         
+\end{tblr}
+\end{table}
+
+Results were collected for each experimental setting described in Section~\ref{subsec:arch}. Figure~\ref{fig:results} reports the averaged, normalised $C_{sp}$ values computed over four independent runs. Predicted $C_{sp}$ were normalised by their corresponding ground-truth values to facilitate comparison across settings, as $C_{sp}$ spans several orders of magnitude. Error bars indicate the 95\% confidence interval over the four runs. 
+
+Overall, the Base+D+S configuration (corresponding to the model incorporating both dropout and the smoothness loss of Equation~\ref{eq:loss_smooth}) exhibits the samllest deviation from the $C_{sp}$ baseline.  This setting also yields comparatively narrower confidence intervals, suggesting improved stability across runs. Across all experimental settings, the lowerst confidence interval widths are consistently observed for BCMS6 and BCMS8. Notably, these curves have much higher areas than others in the dataset -- see the last column of Table~\ref{tab:errors}.  Contrary to expectations, incorporating the area-based loss term (Equation~\ref{eq:loss_area}) resulted in degraded performance across almost all curves -- only BCMS2 shows any improvement compared to the other experimental settings. Table~\ref{tab:errors} presents the relative error \% between the predicted and true $C_{sp}$ values across all the experimental settings, again highlighting Base+D+S as best of the evaluated configurations.
+
+A key limitation of the experimental setup lies in the limited diversity of the input features. Although each of the seven cycles contains 264 samples, all samples within a given cycle share the same experimental conditions; the only varying factor is the voltage step. Moreover, the voltage progression itself is identical across all cycles. Consequently, when accounting for both forward and backward curves, the dataset comprises only around 264 unique feature vectors across approximately 2000 samples. This extremely low feature variance substantially constrains the expressive capacity available to the model and limits the generalisability of the learned representations. In this context, the fact that the model exhibits meaningful performance at all is somewhat surprising, and underscores the need for more diverse experimental conditions (i.e., a wider range of these conditions) in future studies.
+
+\section*{Conclusions}
+The conclusions section should come in this section at the end of the article, before the Author contributions statement and/or Conflicts of interest statement.
+
+\section*{Author contributions}
+We strongly encourage authors to include author contributions and recommend using \href{https://casrai.org/credit/}{CRediT} for standardised contribution descriptions. Please refer to our general \href{https://www.rsc.org/journals-books-databases/journal-authors-reviewers/author-responsibilities/}{author guidelines} for more information about authorship.
+
+\section*{Conflicts of interest}
+In accordance with our policy on \href{https://www.rsc.org/journals-books-databases/journal-authors-reviewers/author-responsibilities/#code-of-conduct}{Conflicts of interest} please ensure that a conflicts of interest statement is included in your manuscript here.  Please note that this statement is required for all submitted manuscripts.  If no conflicts exist, please state that ``There are no conflicts to declare''.
+
+\section*{Data availability}
+
+
+A data availability statement (DAS) is required to be submitted alongside all articles. Please read our \href{https://www.rsc.org/journals-books-databases/author-and-reviewer-hub/authors-information/prepare-and-format/data-sharing/#dataavailabilitystatements}{full guidance on data availability statements} for more details and examples of suitable statements you can use.
+
+\section*{Acknowledgements}
+
+The acknowledgements come at the end of an article after the conclusions and before the notes and references. 
+
+%%%END OF MAIN TEXT%%%
+
+%The \balance command can be used to balance the columns on the final page if desired. It should be placed anywhere within the first column of the last page.
+
+\balance
+
+%If notes are included in your references you can change the title from 'References' to 'Notes and references' using the following command:
+%\renewcommand\refname{Notes and references}
+
+%%%REFERENCES%%%
+\bibliography{refs} %You need to replace "rsc" on this line with the name of your .bib file
+\bibliographystyle{rsc} %the RSC's .bst file
+\end{document}

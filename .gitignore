@@ -1,7 +1,13 @@
+.vscode/
 __pycache__
 saved_models
 *.csv
 *.xlsx
 wandb
-rcs_template
 env_setup_done
+rsc_template/*
+!rsc_template/main.pdf
+!rsc_template/main.tex
+!rsc_template/refs.bib
+!rsc_template/rsc.bst
+!rsc_template/img

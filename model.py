@@ -1,6 +1,10 @@
 import torch
 import torch.nn as nn
 
+
+from utils import hysteresis_area
+
+
 class CV_PINN(nn.Module):
     def __init__(self, config):
         super().__init__()
@@ -11,6 +15,17 @@ class CV_PINN(nn.Module):
         self.out_sz = config["chunksize"]
         self.drop = config["dropout"]
 
+        # self.mlp = nn.Sequential(
+        #     nn.Linear(self.inp_sz, self.hidden_sz * 4),
+        #     nn.ReLU(),
+        #     nn.Dropout(self.drop),
+        #     nn.Linear(self.hidden_sz * 4, self.hidden_sz * 2),
+        #     nn.ReLU(),
+        #     nn.Linear(self.hidden_sz * 2, self.hidden_sz),
+        #     nn.ReLU(),
+        #     nn.Linear(self.hidden_sz, self.out_sz),
+        # )
+
         self.mlp = nn.Sequential(
             nn.Linear(self.inp_sz, self.hidden_sz),
             nn.ReLU(),
@@ -18,6 +33,7 @@ class CV_PINN(nn.Module):
             nn.ReLU(),
             nn.Linear(self.hidden_sz * 2, self.hidden_sz * 4),
             nn.ReLU(),
+            nn.Dropout(self.drop),
             nn.Linear(self.hidden_sz * 4, self.hidden_sz * 2),
             nn.ReLU(),
             nn.Linear(self.hidden_sz * 2, self.hidden_sz),
@@ -52,7 +68,7 @@ class CV_PINN(nn.Module):
         return net_outputs
 
         
-def train_step(model, dataloader, loss_func, opt):
+def _train_step(model, dataloader, loss_func, opt):
     model.train()
     for batch in dataloader:
         I_target = batch["I_target"].cuda()
@@ -71,7 +87,7 @@ def train_step(model, dataloader, loss_func, opt):
 
     return loss
 
-def val_step(model, dataloader, loss_func):
+def _val_step(model, dataloader, loss_func):
     model.eval()
     for batch in dataloader:
         I_target = batch["I_target"].cuda()
@@ -87,23 +103,95 @@ def val_step(model, dataloader, loss_func):
     return loss
 
 
+def train_step(model, dataset, loss_func, opt):
+    model.train()
+    dataset = dataset.cuda()
+    exp_labels = dataset[:, 6]
+    dataset = dataset[:, torch.arange(dataset.size(1)) != 6]
+    E = dataset[:, 0].unsqueeze(1)
+    I_target = dataset[:, 1].unsqueeze(1)
+    scan_dir = dataset[:, -1].unsqueeze(1)
+    cond_features = dataset[:, 2: -1]
+
+    net_outs = model(E, scan_dir, cond_features)
+    loss = loss_func(
+        E, exp_labels, scan_dir,
+        I_target, net_outs["I_pred"],
+        net_outs["d2I_dE2"],
+    )
+    loss.backward()
+    opt.step()
+    opt.zero_grad()
+    return loss
+
+def val_step(model, dataset, loss_func):
+    model.eval()
+    dataset = dataset.cuda()
+    exp_labels = dataset[:, 6]
+    dataset = dataset[:, torch.arange(dataset.size(1)) != 6]
+    E = dataset[:, 0].unsqueeze(1)
+    I_target = dataset[:, 1].unsqueeze(1)
+    scan_dir = dataset[:, -1].unsqueeze(1)
+ 
+    cond_features = dataset[:, 2: -1]
+
+    net_outs = model(E, scan_dir, cond_features)
+    loss = loss_func(
+        E, exp_labels, scan_dir,
+        I_target, net_outs["I_pred"],
+        net_outs["d2I_dE2"],
+    )
+    return loss
+
 class PINN_Loss:
     def __init__(self, config):
         self.scanrate = config["scanrate_V"]
         self.lambda_smooth = config["lambda_smooth"]
-        self.lambda_dir = config["lambda_dir"]
+        self.lambda_area = config["lambda_dir"]
         self.mse_loss = nn.MSELoss()
 
     def __call__(
         self,
+        E, exp_labels, scan_dir,
         I_target, I_pred,
         d2I_dE2,
     ):
         data_loss = self.mse_loss(I_pred, I_target)
 
         smooth_loss = torch.mean(d2I_dE2 ** 2)
+
+
+        area_loss = 0
+        # experiment_names = torch.unique(exp_labels)
+        # for i in experiment_names:
+        #     exp_indices = (exp_labels == i).nonzero(as_tuple=True)[0]
+        #     exp_E = E[exp_indices]
+        #     exp_I_target = I_target[exp_indices]
+        #     exp_I_pred = I_pred[exp_indices]
+        #     exp_scan_dir = scan_dir[exp_indices]
+        #     target_area = hysteresis_area(exp_E, exp_I_target, exp_scan_dir)
+        #     pred_area = hysteresis_area(exp_E, exp_I_pred, exp_scan_dir)
+        #     area_loss += self.mse_loss(target_area, pred_area)
+
+        # area_loss /= len(experiment_names)
         loss = (
             data_loss + 
-            self.lambda_smooth * smooth_loss
+            self.lambda_smooth * smooth_loss + 
+            self.lambda_area * area_loss
         )
         return loss
+
+def get_average_model_dict(model_dicts):
+    averaged_dict = None
+    num_models = len(model_dicts)
+
+    for d in model_dicts:
+        if averaged_dict is None:
+            averaged_dict = d.copy()
+        for k, v in d.items():
+            averaged_dict[k] += v
+    
+    for k, v in averaged_dict.items():
+        averaged_dict[k] /= num_models
+
+    return averaged_dict
