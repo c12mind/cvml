@@ -1,67 +1,53 @@
 {
     "data_files": [
         {
-            "name": "BCMS1Eth.csv",
-            "voltage": 1.5,
-            "temp": 800,
-            "time_h": 3,
-            "mass_mg": 0.07
-        },
-        {
             "name": "BCMS2Eth.csv",
             "voltage": 2,
             "temp": 800,
             "time_h": 2,
-            "mass_mg": 0.11
+            "mass_mg": 1.9
+        },
+        {
+            "name": "BCMS2Eth_again.csv",
+            "voltage": 2, 
+            "temp": 650, 
+            "time_h": 3,
+            "mass_mg": 0.7
         },
         {
             "name": "BCMS3Eth.csv", 
             "voltage": 2, 
             "temp": 750, 
             "time_h": 2,
-            "mass_mg": 0.11
-        },
-        {
-            "name": "BCMS4Eth.csv",
-            "voltage": 2, 
-            "temp": 700, 
-            "time_h": 2,
-            "mass_mg": 0.21
-        },
-        {
-            "name": "BCMS5Eth.csv",
-            "voltage": 2, 
-            "temp": 650, 
-            "time_h": 2,
-            "mass_mg": 0.1
+            "mass_mg": 2.2
         },
         {
             "name": "BCMS6Eth.csv", 
             "voltage": 2.5, 
             "temp": 700, 
             "time_h": 2,
-            "mass_mg": 0.2
+            "mass_mg": 0.28
         },
         {
             "name": "BCMS7Eth.csv", 
-            "voltage": 2.8, 
-            "temp": 700, 
+            "voltage": 2, 
+            "temp": 750, 
             "time_h": 2,
-            "mass_mg": 0.25
+            "mass_mg": 1.7
         },
         {
             "name": "BCMS8_KOH_Eth.csv", 
             "voltage": 2.5, 
             "temp": 700, 
             "time_h": 2,
-            "mass_mg": 0.21
+            "mass_mg": 0.8
         },
         {
             "name": "BCMS9Eth.csv", 
             "voltage": 2.8, 
-            "temp": 750, 
+            "temp": 700, 
             "time_h": 2,
-            "mass_mg": 0.25
+            "mass_mg": 5.7
         }
     ],
     "rows": 264,
@@ -75,7 +61,7 @@
     "save_freq": 1000,
     "hidden_sz": 128,
     "dropout": 0.0,
-    "leave_out": ["BCMS1Eth"],
+    "leave_out": ["BCMS9Eth"],
     "use_wandb": false,
     "chunksize": 1,
     "model_dir": "saved_models",
