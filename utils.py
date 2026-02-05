@@ -56,7 +56,7 @@ def get_student_t(confidence_required, num_samples):
 def plot_result(result_obj, offset_param=0.2):
     experiments = result_obj["experiments"]
     xs = 2 * np.arange(len(experiments))
-    plt.figure(figsize=(15, 5))
+    plt.figure(figsize=(17, 5))
     setting_names = result_obj["settings"].keys()
     n = len(setting_names)
     width = offset_param /  n
@@ -66,12 +66,13 @@ def plot_result(result_obj, offset_param=0.2):
         ys = np.array(setting["normed_pred"])
         ci = np.array(setting["ci"])
         plt.errorbar(xs + offset, ys, yerr=ci, fmt='o', capsize=4, label=setting_name)
-    plt.plot(xs, np.ones_like(xs), color="black", label="Target", alpha=0.5, linestyle="--")
-    plt.legend(ncols=5)
+    # plt.plot(xs, np.ones_like(xs), color="black", label="Target", alpha=0.5, linestyle="--")
+    plt.axhline(y=1, color="black", label="Target", alpha=0.5, linestyle="--")
+    plt.legend(ncols=6)
     plt.ylabel("Average Normalised $C_{sp}$")
     plt.xlabel("Cycle")
     plt.xticks(xs, experiments)
-    plt.savefig("test.png")
+    plt.savefig("test.png", bbox_inches='tight')
 
 
 
@@ -80,3 +81,4 @@ if __name__ == "__main__":
         results = json.load(fh)
     
     plot_result(results, offset_param=0.8)
+    # print(get_student_t(0.95, 5))
