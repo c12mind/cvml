@@ -64,7 +64,10 @@ class DatasetHandler:
     def norm_continuous_data(self, header):
         mean = self.dataset[header].mean()
         std = self.dataset[header].std()
-        self.dataset[header] = (self.dataset[header] - mean) / std
+        if std == 0:
+            self.dataset[header] = 0
+        else:
+            self.dataset[header] = (self.dataset[header] - mean) / std
     
     def set_voltage_sweep_stats(self):
         v_min = self.dataset["E_step"].min()
@@ -153,7 +156,6 @@ class CVDataset(Dataset):
                 self.dataset.index[chunk_start:chunk_end],
                 ["current", "E_step", "mass_mg", "temp", "time_h", "voltage", "scan_dir"]
             ]
-        # chunk = self.dataset.iloc[index][["current", "E_step", "mass_mg", "temp", "time_h", "voltage", "scan_dir"]]
         return chunk
 
         
