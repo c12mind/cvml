@@ -50,6 +50,8 @@
     "leave_out": ["BCMS1Eth"],
     "use_wandb": false,
     "chunksize": 1,
+    "num_conds": 4,
     "model_dir": "saved_models",
-    "project_name": "Cyclic_volummetry_ML"
+    "project_name": "Cyclic_volummetry_ML",
+    "cond_weight_temp": 0.05
 }
