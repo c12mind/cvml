@@ -3,6 +3,7 @@ __pycache__
 saved_models
 *.csv
 *.xlsx
+*_cond.weights.json
 wandb
 env_setup_done
 rsc_template/*
