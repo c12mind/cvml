@@ -66,9 +66,12 @@ def plot_result(result_obj, offset_param=0.2):
         ys = np.array(setting["normed_pred"])
         ci = np.array(setting["ci"])
         plt.errorbar(xs + offset, ys, yerr=ci, fmt='o', capsize=4, label=setting_name)
-    # plt.plot(xs, np.ones_like(xs), color="black", label="Target", alpha=0.5, linestyle="--")
     plt.axhline(y=1, color="black", label="Target", alpha=0.5, linestyle="--")
-    plt.legend(ncols=6)
+    plt.legend(
+        ncols=7,
+        loc="upper left"
+    )
+    plt.ylim(top=plt.ylim()[1] * 1.07)
     plt.ylabel("Average Normalised $C_{sp}$")
     plt.xlabel("Cycle")
     plt.xticks(xs, experiments)
