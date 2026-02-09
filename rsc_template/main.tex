@@ -196,7 +196,7 @@ Thus, the MLP must have a ReLU activation function between each hidden layer, gi
 \begin{figure*}
  \centering
  \includegraphics[width=\linewidth]{model_arch.png}
- \caption{An overview of the training pipeline and model architecture, incorporating dropout after the largest layer to discourage overfitting. The input is a 6-dimensional vector consisting of the potential step, and several experimental conditions under which the electrode material was sysnthesised, and the output is a prediction of the current value at that potential. Ground truth hysteresis curves shown in blue and model prediction shown in orange.}
+ \caption{An overview of the training pipeline and model architecture, incorporating dropout after the largest layer to discourage overfitting. The input is a 6-dimensional vector consisting of a potential step, scan direction, and several experimental conditions under which the electrode material was sysnthesised; the output is a prediction of the current value at that potential. Four trainable weights $W^{4}$ provide a scaling factor for each of the conditions. Ground truth hysteresis curves shown in blue and model prediction shown in orange.}
  \label{fig:model_arch}
 \end{figure*}
 
@@ -218,7 +218,7 @@ The application of machine learning systems to the prediction of specific capaci
 where $I_{pred}$ is the function that is approximated by the MLP, $E$ is the potential, $\nu$ is the scanrate, m is the total mass of the active material in the electrodes, and $\Delta V$ is the change in voltage over the whole charge/discharge cycle.
 
 \subsection{Dataset}
-The complete dataset is made up of current density samples \emph{\textbf{(ask Alex if this is the correct term)}} from 5 cyclic voltammetry cycles -- see Table~\ref{tab:dataset}. These were collected via potentiostat with a scanrate of \SI{100}{\milli\volt\per\second}. Each cycle consists of 264 rows, with columns for current (I / \unit{\ampere}), voltage step (E / \unit{\volt}), active electrode mass (M / \unit{\milli\gram}), temperature (T / \unit{\degreeCelsius}), electrolysis voltage (V$_e$ / \unit{\volt}), electrolysis duration (D / \unit{\hour}), and scan direction (S). The last feature tells the model if the particular point is on the charge or discharge curve and is represented by either +1 (charging)  or -1 (discharging).  
+The complete dataset is made up of current samples from 5 cyclic voltammetry cycles -- see Table~\ref{tab:dataset}. These were collected via potentiostat with a scanrate of \SI{100}{\milli\volt\per\second}. Each cycle consists of 264 rows, with columns for current (I / \unit{\ampere}), voltage step (E / \unit{\volt}), active electrode mass (M / \unit{\milli\gram}), temperature (T / \unit{\degreeCelsius}), electrolysis duration (D / \unit{\hour}), electrolysis voltage ($V_e$ / \unit{\volt}), and scan direction (S). The last feature tells the model if the particular point is on the charge or discharge curve and is represented by either +1 (charging)  or -1 (discharging).  
 
 \begin{table}
 \caption{Characteristics of each cycle that constitutes the dataset used for training our model. The scanrate was \SI{100}{\milli\volt\per\second} in all cases.}
@@ -228,16 +228,16 @@ The complete dataset is made up of current density samples \emph{\textbf{(ask Al
 \begin{tblr}{
   hline{1-2} = {-}{}
 }
-Cycle      & M / mg  & T / $^{\circ}$C& V$_e$ / V & D / h & Electrolyte \\
-BCMS2      & 0.11    & 800            & 2         & 2     & Ethaline    \\
-BCMS3      & 0.11    & 750            & 2         & 2     & Ethaline    \\
-BCMS5      & 0.18    & 650            & 2         & 2     & Ethaline    \\
-BCMS7      & 0.25    & 700            & 2.8       & 2     & Ethaline    \\
-BCMS9      & 0.25    & 750            & 2.8       & 2     & Ethaline       
+Cycle      & M / mg  & T / $^{\circ}$C& D / h & $V_e$ / V & Electrolyte \\
+BCMS2      & 0.11    & 800            & 2     & 2         & Ethaline    \\
+BCMS3      & 0.11    & 750            & 2     & 2         & Ethaline    \\
+BCMS5      & 0.18    & 650            & 2     & 2         & Ethaline    \\
+BCMS7      & 0.25    & 700            & 2     & 2.8       & Ethaline    \\
+BCMS9      & 0.25    & 750            & 2     & 2.8       & Ethaline       
 \end{tblr}
 \end{table}
 
-Notice that the various inputs span many orders of magnitude -- this is a problem for machine learning models, which work best when their inputs are all near or around -1 to 1 (rephrase this). Using raw features such as those presented in Table~\ref{tab:dataset} mean that ones with large absolute values dominate the weights of the model, even though they may not be as important, and vice versa, which can lead to lower performance~\cite{kimInvestigatingImpactData2025}. For this reason, all features are scaled across all cycles such that they have zero mean and unit standard deviation. To transform an individual instance of a feature $d_i$ (e.g. electrode mass, temperature) to its scaled value $d_{norm,i}$:
+Notice that the various inputs span many orders of magnitude -- this is a problem for machine learning models. Using raw features such as those presented in Table~\ref{tab:dataset} mean that ones with large absolute values dominate the weights of the model, even though they may not be as important, and vice versa, which can lead to lower performance~\cite{kimInvestigatingImpactData2025}. For this reason, all features are scaled across all cycles such that they have zero mean and unit standard deviation. To transform an individual instance of a feature $d_i$ (e.g. electrode mass, temperature) to its scaled value $d_{norm,i}$:
 
 \begin{equation}\label{eq:norm}
   d_{norm,i} = \frac{d_i - \mu(D)}{\sigma(D)}
@@ -259,7 +259,18 @@ The input to the model is therefore a 6 dimensional, normalised feature vector t
 \label{subsec:arch}
 We employ leave-one-out cross validation when training: for any one run, the model is trained only on points from 4 of the cycles; points from the 5$^{th}$ are held out for validation. Here, validation means only evaluating the forward pass of the model and not updating the weights of the model. It is a test to determine if the model is able to generalise to ``unseen'' data, and each cycle is subjected to this treatment in turn. We repeat training runs five times independently to build confidence that the model's output is reliable.
 
-Our model is a multilayered perceptron with 4 hidden layers in between a 6-neuron input layer and a 1-neuron output layer. Please refer to Figure~\ref{fig:model_arch} for the full model architecture. Note the dropout layer, which randomly (with some probability $p$) deactivates a subset of neurons during training. This is done so that the model does not rely too heavily on any single neuron or set of neurons, thereby reducing overfitting and improving generalisation to new data~\cite{mouDropoutTrainingDatadependent2018}. Wider layers with more neurons benefit more from dropout as they are more at risk from overfitting~\cite{srivastavaDropoutSimpleWay2014}, hence the placement between $F_{2}$ and $F_{3}$.
+Due to the small size of the dataset, additional ... is introduced to improve the training stability and to encourage the model to learn meaningful relationships between experimental conditions and the voltammetric response. To this end, we introduce four trainable parameters that act as scaling factors for the experimental conditions that are used when synthesising the black carbon -- active mass (M), electrolysis temperature (T), electrolysis duration (D) and electrolysis voltage ($V_e$). These parameters allow the model to explicitly learn the relative importance of each condition rather than solely relying on implicit weighting within the first layer of the MLP. 
+
+As illustrated in Figure~\ref{fig:model_arch}, the learned scaling parameters are applied to the condition vector prior to concatenation with the potential step (E) and scan direction (S), resulting in the 6-dimensional input that is expected by the MLP. The learned weights are first divided by a temperature parameter $\tau$, which controls the sharpness of the relative weighting, and subsequently normalised by a softmax function to give the scaling factor. The scaling factor $s_i$ for each learned weight is given by:
+
+\begin{equation}
+  \label{eq:softmax}
+  s_i = \frac{\exp(\alpha_i / \tau)}{\sum_{j=1}^{4} \exp(\alpha_j / \tau)}
+\end{equation}
+
+where $\alpha_i$ is any one of the four learned weights. The resulting normalised weights are multiplied element-wise by the condition vector, yielding the weighted condition vector.
+
+The rest of the model is a multilayered perceptron with 4 hidden layers in between a 6-neuron input layer and a 1-neuron output layer. Please refer to Figure~\ref{fig:model_arch} for the full model architecture. Note the dropout layer, which randomly (with some probability $p$) deactivates a subset of neurons during training. This is done so that the model does not rely too heavily on any single neuron or set of neurons, thereby reducing overfitting and improving generalisation to new data~\cite{mouDropoutTrainingDatadependent2018}. Wider layers with more neurons benefit more from dropout as they are more at risk from overfitting~\cite{srivastavaDropoutSimpleWay2014}, hence the placement between $F_{2}$ and $F_{3}$.
 
 As mentioned in the Section~\ref{sec:ml_analysis}, the objective function scores the output of the MLP so it can be used in gradient calculations, which in turn are used to inform updates to the model's weights. Because the model predicts the current at a particular voltage step, part of the loss function is the mean squared error (MSE) between the predicted and actual value. This is given by:
 
@@ -300,6 +311,7 @@ In order to assess the importance of these loss functions, an ablation study was
   \item  ``+ D'' -- inclusion of a \textbf{D}ropout layer, as discussed in Section~\ref{subsec:arch}
   \item  ``+ S'' -- addition of the \textbf{S}moothing $L_{smth}$ objective to $L$
   \item  ``+ A'' -- addition of the \textbf{A}rea $L_{area}$ objective to $L$ 
+  \item  ``+ W'' -- inclusion of trainable \textbf{W}eights for each of the synthesis conditions 
 \end{enumerate}
 
 
@@ -312,24 +324,43 @@ In order to assess the importance of these loss functions, an ablation study was
 \small
 \centering
 \begin{tblr}{
-  hline{1-2,9} = {-}{}
+  hline{1-2,7,8,9} = {-}{}
 }
-Cycle         & Base    & {Base\\+D}  & {Base\\+D\\+S}  & {Base\\+D\\+S\\+A}   & {Base\\+D\\+A} \\
-BCMS2         & 0.62    & 0.58        & 2.54            & 7.17                 & 0.77           \\
-BCMS3         & 29.82   & 23.28       & 20.15           & 16.11                & 16.93          \\
-BCMS5         & 7.04    & 15.05       & 7.88            & 2.61                 & 8.83           \\
-BCMS7         & 30.87   & 25.37       & 18.50           & 26.78                & 17.92          \\
-BCMS9         & 9.12    & 4.64        & 1.91            & 2.42                 & 0.39           \\
-Avg. Err(\%)  & 15.49   & 13.79       & 10.20           & 11.02                & \textbf{8.97}
+Cycle         & Base    & {Base\\+D}  & {Base\\+D\\+S}  & {Base\\+D\\+S\\+A}   & {Base\\+D\\+A} & {Base\\+D\\+A\\+W}\\
+BCMS2         & 0.62    & 0.58        & 2.54            & 7.17                 & 0.77           & 3.25             \\
+BCMS3         & 29.82   & 23.28       & 20.15           & 16.11                & 16.93          & 0.42             \\
+BCMS5         & 7.04    & 15.05       & 7.88            & 2.61                 & 8.83           & 7.28             \\
+BCMS7         & 30.87   & 25.37       & 18.50           & 26.78                & 17.92          & 4.69             \\
+BCMS9         & 9.12    & 4.64        & 1.91            & 2.42                 & 0.39           & 11.46             \\
+Avg. Err(\%)  & 15.49   & 13.79       & 10.20           & 11.02                & 8.97           & \textbf{5.42}
 \end{tblr}
 \end{table}
 
 
 Results were collected for each experimental setting described in Section~\ref{subsec:arch}. Figure~\ref{fig:results} reports the averaged, normalised $C_{sp}$ values computed over five independent runs. Predicted $C_{sp}$ were normalised by their corresponding ground-truth values to facilitate comparison across settings, as $C_{sp}$ spans several orders of magnitude. Error bars indicate the 95\% confidence interval over the five runs. 
 
-Overall, the Base+D+A configuration (corresponding to the model incorporating both dropout and the area loss of Equation~\ref{eq:loss_area}) exhibits the samllest deviation from the $C_{sp}$ baseline.  This setting also yields comparatively narrower confidence intervals, suggesting improved stability across runs. Incorporating the area-based loss term (Equation~\ref{eq:loss_area}) resulted in improved performance across all curves. As shown in Figure~\ref{fig:results}, models that include this loss term tend to produce predictions that are closer to the target baseline. It should be noted that the smoothness loss term (Equation~\ref{eq:loss_smooth}) seems to be somewhat at odds with the area loss. This effect is reflected in  Table~\ref{tab:errors}, which presents the relative error \% between the predicted and true $C_{sp}$ values across all the experimental settings. The addition of area loss to Base+D+S results in a slight increase the average error. However, removing the smoothness loss (corresponding to the Base+D+A configuration) yields the lowest overall error. This suggests that the two loss terms may impose competing constraints on the learned representations, which could partially limit their combined effectiveness.
+Overall, the Base+D+A+W configuration (corresponding to the model incorporating dropout, condition scaling, and the area loss of Equation~\ref{eq:loss_area}) exhibits the samllest deviation from the $C_{sp}$ baseline, on average.  This setting also yields comparatively narrower confidence intervals, suggesting improved stability across runs. Incorporating the area-based loss term resulted in improved performance across all curves. As shown in Figure~\ref{fig:results}, models that include this loss term tend to produce predictions that are closer to the target baseline. It should be noted that the smoothness loss term (Equation~\ref{eq:loss_smooth}) seems to be somewhat at odds with the area loss. This effect is reflected in  Table~\ref{tab:errors}, which presents the relative error percentage between the predicted and true $C_{sp}$ values across all the experimental settings. The addition of area loss to Base+D+S (10.2\% error) results in the error increasing slightly to 11.02\%. However, removing the smoothness loss (corresponding to the Base+D+A configuration) yields a lower overall error (8.97\%). This suggests that the two loss terms may impose competing constraints on the learned representations, which could partially limit their combined effectiveness. However, the most effective strategy incorporates condition scaling to the latter configuration (giving Base+D+A+W), and yielding an average error of 5.42\%.
 
-A key limitation of the experimental setup lies in the limited diversity of the input features. Although each of the five cycles contains 264 samples, all samples within a given cycle share the same experimental conditions; the only varying factor is the voltage step. Moreover, the voltage progression itself is identical across all cycles. Consequently, when accounting for both forward and backward curves, the dataset comprises only around 264 unique feature vectors across 1320 samples. This extremely low feature variance substantially constrains the expressive capacity available to the model and limits the generalisability of the learned representations. In this context, the fact that the model exhibits meaningful performance at all is somewhat surprising, and underscores the need for more diverse experimental conditions (i.e., a wider range of these conditions) in future studies.
+\begin{table}
+\caption{Relative weights assigned by the proposed model to the various molten salt parameters. The exclusion of one curve from the training gives a slightly different weight for each experiment, but overall, the model was most sensitive to temperature (T), followed by mass (M) and electrolysis voltage ($V_e$) on roughly equal footing. Electrolysis duration (D) was found to be the least important input in predicting $C_{sp}$.}
+\label{tab:cond_weights}
+\centering
+\begin{tblr}{
+  hline{1,2,7,8} = {-}{},
+}
+Experiment & M      & T      & D     & $V_e$ \\
+BCMS2      & 0.350  & 0.288  & 0.161 & 0.201     \\
+BCMS3      & 0.293  & 0.358  & 0.162 & 0.186     \\
+BCMS5      & 0.270  & 0.351  & 0.070 & 0.309     \\
+BCMS7      & 0.112  & 0.328  & 0.238 & 0.322     \\
+BCMS9      & 0.197  & 0.580  & 0.090 & 0.134     \\
+Average    & 0.244  & 0.381  & 0.144 & 0.230     
+\end{tblr}
+\end{table}
+
+The inclusion of trainable scaling values for the four experimental conditions (M, T, V and D) offers insights into the relative importance of each of these in determining $C_{sp}$. Table~\ref{tab:cond_weights} demonstrates that on average, the model assigns most importance (38.1\% relative weight) to the temperature of the molten salt (T). Sensitivity to the active material mass (M) and electrolysis voltage ($V_e$) is roughly equal, at 24.4\% and 23.0\%, respectively. Finally, duration of electrolysis (D) recieves the lowest relative weight (14.4\%). This is unsuprising, as this setting did not vary at all  across the dataset (see Table~\ref{tab:dataset}), so could not explain any of the variance in the predicted output.
+
+A key limitation of the experimental setup lies in the limited diversity of the input features. Although each of the five cycles contains 264 samples, all samples within a given cycle share the same experimental conditions; the only varying factor is the voltage step. Moreover, the voltage progression itself is identical across all cycles. Thus, even though a unique feature vector exists for each point, the dataset comprises only 5 unique condition vectors across 1320 samples. This extremely low condition variance substantially constrains the expressive capacity available to the model and limits the generalisability of the learned representations. In this context, the fact that the model exhibits meaningful performance at all is somewhat surprising, and underscores the need for more diverse experimental conditions (i.e., a wider range of these conditions) in future studies.
 
 \section*{Conclusions}
 The conclusions section should come in this section at the end of the article, before the Author contributions statement and/or Conflicts of interest statement.
