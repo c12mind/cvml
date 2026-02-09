@@ -4,6 +4,7 @@ from argparse import ArgumentParser, BooleanOptionalAction
 from pathlib import Path
 from pprint import pprint
 import csv
+import json
 
 import matplotlib.pyplot as plt
 
@@ -84,8 +85,8 @@ def make_curve(model, dataset, ds_stats, run_name, epoch):
     print(f"Hysteresis area: {real_area}")
 
     plt.figure()
-    plt.plot(xs.numpy(), real_curve.numpy(), label="real I")
-    plt.plot(xs.numpy(), pred_curve.numpy(), label="pred I")
+    plt.plot(xs.numpy(), real_curve.numpy(), label="real I", linewidth=4)
+    plt.plot(xs.numpy(), pred_curve.numpy(), label="pred I", linewidth=4)
     plt.legend()
     plt.title(f"{run_name}\n{grav_txt}")
     plt.savefig(f"saved_models/{run_name}/epoch_{epoch}_curve.png")
@@ -99,7 +100,10 @@ if __name__ == "__main__":
 
     all_runs = Path("saved_models").glob(f"{parsed_args.prefix}*")
     all_results = {}
+    cond_weights_running_total = None
+    num_runs = 0
     for run_path in all_runs:
+        num_runs += 1
         all_checkpoints, config = get_sorted_checkpoints(run_path)
         save_freq = config["save_freq"]
         best_checkpoint = all_checkpoints[0]
@@ -138,25 +142,68 @@ if __name__ == "__main__":
 
         real = None
         pred_csp = []
+        weights_inner = None
         for e, c in checkpoints:
             model = load_pretrained_model(config, c)
+            weights = model.get_parameter("xc_scale") / config["cond_weight_temp"]
+            cond_weights = torch.softmax(weights, dim=0)
+            if weights_inner is None:
+                weights_inner = cond_weights
+            else:
+                weights_inner += cond_weights
+
             model = model.cuda()
             pred, real =  make_curve(model, val_ds, ds_handler.get_ds_stats(), run_path.name, e)
             pred_csp.append(pred.item())
         all_results[curve_name][curve_run_num]["real"] = real.item()
         all_results[curve_name][curve_run_num]["preds"] = pred_csp
 
+        weights_inner /= len(checkpoints)
+        if cond_weights_running_total is None:
+            cond_weights_running_total = weights_inner
+        else:
+            cond_weights_running_total += weights_inner
+
+        all_results[curve_name][curve_run_num]["cond_weights"] = weights_inner
+
+    cond_weights_running_total /= num_runs
+    conditions = ["mass", "temp", "time", "voltage"]
     csv_rows = []
+    weights_dict = {
+        "all_curves": {}
+    } 
+    avg_weight_dict = None
+    num_curves = 0
     for curve in all_results.keys():
+        num_curves += 1
         row = [curve, all_results[curve][0]["real"]]
+        avg_weight_dict_curve = None
+        num_runs = 0
         for run_num in all_results[curve].keys():
+            num_runs += 1
             preds = all_results[curve][run_num]["preds"]
             row += "."
             row += preds
             row += "."
+            if avg_weight_dict_curve is None:
+                avg_weight_dict_curve = all_results[curve][run_num]["cond_weights"]
+            else:
+                avg_weight_dict_curve += all_results[curve][run_num]["cond_weights"]
         csv_rows.append(row)
+        avg_weight_dict_curve /= num_runs
+        weights_dict[curve] = dict(zip(conditions, avg_weight_dict_curve.tolist()))
+        if avg_weight_dict is None:
+            avg_weight_dict =  avg_weight_dict_curve
+        else:
+            avg_weight_dict += avg_weight_dict_curve
+
+    avg_weight_dict /= num_curves
+    all_curves_weights_dict = dict(zip(conditions, avg_weight_dict.tolist()))
+    weights_dict["all_curves"] = all_curves_weights_dict
 
     with open(f"{parsed_args.prefix}.csv", "w") as fh:
         writer = csv.writer(fh, delimiter="\t")
         writer.writerows(csv_rows)
+    with open(f"{parsed_args.prefix}_cond.weights.json", "w") as fh:
+        json.dump(weights_dict, fh)
 

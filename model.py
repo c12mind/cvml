@@ -14,6 +14,9 @@ class CV_PINN(nn.Module):
         self.inp_sz = config["chunksize"] + 5 # 4 const. exp conditions: mass, voltage, temp, time + scan dir
         self.out_sz = config["chunksize"]
         self.drop = config["dropout"]
+        self.xc_scale = nn.Parameter(torch.ones(config["num_conds"]))
+        self.cond_weight_temp = config["cond_weight_temp"]
+        # self.cond_weight_temp = 1
 
         # self.mlp = nn.Sequential(
         #     nn.Linear(self.inp_sz, self.hidden_sz * 4),
@@ -44,7 +47,11 @@ class CV_PINN(nn.Module):
     
     def forward(self, E, scan_dir, cond_features):
         E.requires_grad_(True)
-        condition_features = torch.cat([E, scan_dir, cond_features], dim=1)
+        scaled_cond_features = torch.softmax(
+            self.xc_scale / self.cond_weight_temp,
+            dim=0
+        ) * cond_features
+        condition_features = torch.cat([E, scan_dir, scaled_cond_features], dim=1)
         I_pred = self.mlp(condition_features)
         dI_dE = torch.autograd.grad(
             outputs=I_pred,
@@ -162,18 +169,18 @@ class PINN_Loss:
 
 
         area_loss = 0
-        # experiment_names = torch.unique(exp_labels)
-        # for i in experiment_names:
-        #     exp_indices = (exp_labels == i).nonzero(as_tuple=True)[0]
-        #     exp_E = E[exp_indices]
-        #     exp_I_target = I_target[exp_indices]
-        #     exp_I_pred = I_pred[exp_indices]
-        #     exp_scan_dir = scan_dir[exp_indices]
-        #     target_area = hysteresis_area(exp_E, exp_I_target, exp_scan_dir)
-        #     pred_area = hysteresis_area(exp_E, exp_I_pred, exp_scan_dir)
-        #     area_loss += self.mse_loss(target_area, pred_area)
+        experiment_names = torch.unique(exp_labels)
+        for i in experiment_names:
+            exp_indices = (exp_labels == i).nonzero(as_tuple=True)[0]
+            exp_E = E[exp_indices]
+            exp_I_target = I_target[exp_indices]
+            exp_I_pred = I_pred[exp_indices]
+            exp_scan_dir = scan_dir[exp_indices]
+            target_area = hysteresis_area(exp_E, exp_I_target, exp_scan_dir)
+            pred_area = hysteresis_area(exp_E, exp_I_pred, exp_scan_dir)
+            area_loss += self.mse_loss(target_area, pred_area)
 
-        # area_loss /= len(experiment_names)
+        area_loss /= len(experiment_names)
         loss = (
             data_loss + 
             self.lambda_smooth * smooth_loss + 
