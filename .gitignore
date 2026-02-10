@@ -18,5 +18,6 @@ els-cas-templates/*
 !els-cas-templates/main.pdf
 !els-cas-templates/main.tex
 !els-cas-templates/refs.bib
-!els-cas-templates/rsc.bst
+!els-cas-templates/cas-model2-names.bst
+!els-cas-templates/cas-common.sty
 !els-cas-templates/img
