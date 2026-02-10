@@ -6,9 +6,17 @@ saved_models
 *_cond.weights.json
 wandb
 env_setup_done
+
 rsc_template/*
 !rsc_template/main.pdf
 !rsc_template/main.tex
 !rsc_template/refs.bib
 !rsc_template/rsc.bst
 !rsc_template/img
+
+els-cas-templates/*
+!els-cas-templates/main.pdf
+!els-cas-templates/main.tex
+!els-cas-templates/refs.bib
+!els-cas-templates/rsc.bst
+!els-cas-templates/img
