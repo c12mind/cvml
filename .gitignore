@@ -21,3 +21,4 @@ els-cas-templates/*
 !els-cas-templates/cas-model2-names.bst
 !els-cas-templates/cas-common.sty
 !els-cas-templates/img
+!els-cas-templates/cas-dc.cls
